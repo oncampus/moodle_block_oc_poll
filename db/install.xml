@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/oc_poll/db" VERSION="20130404" COMMENT="XMLDB file for Moodle blocks/oc_poll"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="block_oc_poll_polls" COMMENT="Default comment for block_oc_poll, please edit me" NEXT="block_oc_poll_choices">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="titel"/>
+        <FIELD NAME="titel" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT="titel" SEQUENCE="false" COMMENT="The titel of the poll" PREVIOUS="id" NEXT="question"/>
+        <FIELD NAME="question" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The question, that has to be answered" PREVIOUS="titel" NEXT="description"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Further description for the poll" PREVIOUS="question" NEXT="start"/>
+        <FIELD NAME="start" TYPE="int" LENGTH="13" NOTNULL="false" SEQUENCE="false" COMMENT="Startdate of the poll" PREVIOUS="description" NEXT="end"/>
+        <FIELD NAME="end" TYPE="int" LENGTH="13" NOTNULL="false" SEQUENCE="false" COMMENT="Enddate of the poll" PREVIOUS="start" NEXT="created"/>
+        <FIELD NAME="created" TYPE="int" LENGTH="13" NOTNULL="true" SEQUENCE="false" COMMENT="When was the poll created?" PREVIOUS="end" NEXT="cid"/>
+        <FIELD NAME="cid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Who created the poll?" PREVIOUS="created" NEXT="active"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Show this poll in the block? 1=yes 0=no" PREVIOUS="cid" NEXT="multipleanswers"/>
+        <FIELD NAME="multipleanswers" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Is the user allowed to chose more than one answers?" PREVIOUS="active"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_oc_poll_choices" COMMENT="The different answers for the polls" PREVIOUS="block_oc_poll_polls" NEXT="block_oc_poll_answers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="pollid"/>
+        <FIELD NAME="pollid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key for table polls" PREVIOUS="id" NEXT="text"/>
+        <FIELD NAME="text" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Answer text for this choice" PREVIOUS="pollid" NEXT="previous"/>
+        <FIELD NAME="previous" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Previous choice to show the choices in the correct order" PREVIOUS="text" NEXT="headline"/>
+        <FIELD NAME="headline" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="This choice is a headline and can not be chosen as an answer" PREVIOUS="previous"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="foreign"/>
+        <KEY NAME="foreign" TYPE="foreign" FIELDS="pollid" REFTABLE="block_oc_poll_polls" REFFIELDS="id" COMMENT="To which poll belongs this choice?" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_oc_poll_answers" COMMENT="The given answers by the moodle users" PREVIOUS="block_oc_poll_choices">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="pollid"/>
+        <FIELD NAME="pollid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Foreing key" PREVIOUS="id" NEXT="choiceid"/>
+        <FIELD NAME="choiceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key" PREVIOUS="pollid" NEXT="cid"/>
+        <FIELD NAME="cid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Created by ..." PREVIOUS="choiceid" NEXT="created"/>
+        <FIELD NAME="created" TYPE="int" LENGTH="13" NOTNULL="true" SEQUENCE="false" COMMENT="When was this answer given?" PREVIOUS="cid" NEXT="noanswer"/>
+        <FIELD NAME="noanswer" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Moodle user doesn't want to take part in this poll 1=no answer" PREVIOUS="created"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="foreign-polls"/>
+        <KEY NAME="foreign-polls" TYPE="foreign" FIELDS="pollid" REFTABLE="block_oc_poll_polls" REFFIELDS="id" COMMENT="Foreign key" PREVIOUS="primary" NEXT="foreign-choices"/>
+        <KEY NAME="foreign-choices" TYPE="foreign" FIELDS="choiceid" REFTABLE="block_oc_poll_choices" REFFIELDS="id" COMMENT="Foreign key" PREVIOUS="foreign-polls"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
